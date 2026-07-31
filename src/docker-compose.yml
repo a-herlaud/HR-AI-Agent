@@ -1,0 +1,8 @@
+services:
+  kpi-api:
+    build: ./kpi_api
+    container_name: kpi-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./kpi_api/app:/app:Z
