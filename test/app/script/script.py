@@ -1,6 +1,7 @@
 import pandas as pd
 import Levenshtein
 import json
+from collections import defaultdict
 
 month_list = [
     "Janvier",
@@ -42,6 +43,9 @@ def quarter_finder(column_list):
     else:
         return None
 
+# def global_quarter(df):
+
+
 sheets = pd.read_excel("./doc/kpi_rh.xlsx", sheet_name=None, header=2)
 
 def clean_sheet(df):
@@ -59,6 +63,7 @@ def clean_sheet(df):
 
 
 result = {}
+total = defaultdict(lambda: defaultdict(int))
 for name, sheet in sheets.items():
     kpis_by_period = clean_sheet(sheet).T.to_dict(orient="index")
     result[name] = {
@@ -69,6 +74,17 @@ for name, sheet in sheets.items():
         for period, values in kpis_by_period.items()
     }
 
+    for period, values in kpis_by_period.items():
+        for kpi, value in values.items():
+            total[period][kpi] += value
+
+result[quarter_finder(clean_sheet(sheets["Pauline"]).columns)] = {
+    period: {
+        "kpis": dict(values),
+        "analysis": ""
+    }
+    for period, values in total.items()
+}
 # print(result)
 
 with open("output.json", "w", encoding="utf-8") as f:
