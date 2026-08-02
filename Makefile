@@ -11,7 +11,11 @@ exec-api:
 
 up-test:
 	docker build -t my-test-image ./test && \
-	docker run --rm -it -v "./test/app:/app:Z" my-test-image bash
+		docker run --rm -it \
+			--add-host=host.docker.internal:host-gateway \
+			-v "./test/app:/app:Z" \
+			my-test-image bash
+		docker rmi my-test-image
 
 fclean:
 	$(COMPOSE) down -v --rmi local

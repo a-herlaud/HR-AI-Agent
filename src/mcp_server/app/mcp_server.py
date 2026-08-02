@@ -10,10 +10,10 @@ def get_quarter_kpis() -> dict:
     """
 
     response = requests.get(
-    "http://host.docker.internal:8000/api"
+    "http://kpi-api:8000/api"
     )
 
-    return reponse.json()
+    return response.json()
 
 @mcp.tool()
 def get_monthly_kpis(month: str) -> dict:
@@ -22,10 +22,10 @@ def get_monthly_kpis(month: str) -> dict:
     """
 
     response = requests.get(
-    "http://host.docker.internal:8000/api/{month}"
+    "http://kpi-api:8000/api/{month}"
     )
 
-    return reponse.json()
+    return response.json()
 
 mcp.run(
     transport="http",
