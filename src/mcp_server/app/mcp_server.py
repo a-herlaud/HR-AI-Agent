@@ -16,7 +16,7 @@ def get_quarter_kpis() -> dict:
     return reponse.json()
 
 @mcp.tool()
-def get_quarter_kpis(month: str) -> dict:
+def get_monthly_kpis(month: str) -> dict:
     """
     get the HR KPIs for a certain month
     """
