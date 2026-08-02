@@ -1,0 +1,7 @@
+fastapi
+langchain_mcp_adapters
+mcp>=1.28,<2
+langgraph
+litellm
+langchain-litellm
+langchain
