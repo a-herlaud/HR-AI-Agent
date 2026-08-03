@@ -25,6 +25,14 @@ services:
     env_file:
       - ../.env
 
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "80:8080"
+    networks:
+      - hr-process-helper  
+
 networks:
   hr-process-helper:
     driver: bridge

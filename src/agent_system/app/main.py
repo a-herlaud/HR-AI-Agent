@@ -48,8 +48,9 @@ async def prompt_response(prompt: str):
         }
     )
 
-    return response["messages"][-1].content
-
+    return {
+            "response": response["messages"][-1].content
+            }
 
 
 
