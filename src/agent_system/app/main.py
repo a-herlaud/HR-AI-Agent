@@ -23,8 +23,8 @@ llm = ChatLiteLLM(
 
 
 
-@app.get("/prompt")
-async def prompt_response():
+@app.post("/prompt")
+async def prompt_response(prompt: str):
     tools = await client.get_tools()
 
     # Pick a tool
@@ -40,10 +40,10 @@ async def prompt_response():
         tools=tools,
     )
 
-    response = await agent.ainvoke(   # <-- was agent.invoke(...)
+    response = await agent.ainvoke(
         {
             "messages": [
-                {"role": "user", "content": "What the HR KPIs for this quarter ?"}
+                {"role": "user", "content": prompt}
             ]
         }
     )
