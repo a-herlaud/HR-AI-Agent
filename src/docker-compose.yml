@@ -6,6 +6,26 @@ services:
       - "8000:8000"
     networks:
       - hr-process-helper
+    environment:
+      OTEL_SERVICE_NAME: kpi-api
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+      JAEGER_UI_CONFIG_FILE: /etc/jaeger/ui-config.json
+    volumes:
+      - ./jaeger/jaeger-ui.json:/etc/jaeger/ui-config.json:ro
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - hr-process-helper
 
   mcp-server:
     build: ./mcp_server
@@ -14,6 +34,11 @@ services:
       - "8001:8001"
     networks:
       - hr-process-helper
+    environment:
+      OTEL_SERVICE_NAME: mcp-server
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
 
   agent-system:
     build: ./agent_system
@@ -24,6 +49,11 @@ services:
       - hr-process-helper
     env_file:
       - ../.env
+    environment:
+      OTEL_SERVICE_NAME: agent-system
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
 
   frontend:
     build: ./frontend

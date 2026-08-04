@@ -1,2 +1,7 @@
 fastmcp
 requests
+ddgs
+beautifulsoup4
+opentelemetry-distro
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-fastapi

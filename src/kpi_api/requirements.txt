@@ -1,2 +1,5 @@
 uvicorn
 fastapi
+opentelemetry-distro
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-fastapi

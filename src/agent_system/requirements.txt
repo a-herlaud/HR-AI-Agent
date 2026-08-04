@@ -5,3 +5,7 @@ langgraph
 litellm
 langchain-litellm
 langchain
+langfuse
+opentelemetry-distro
+opentelemetry-exporter-otlp
+opentelemetry-instrumentation-fastapi
