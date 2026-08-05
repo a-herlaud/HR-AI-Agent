@@ -3,28 +3,16 @@ from typing import Any, Optional
 from fastapi import FastAPI
 from langchain.agents import create_agent
 from langchain_litellm import ChatLiteLLM
-from langchain_mcp_adapters.client import MultiServerMCPClient
 from langfuse import Langfuse
 from langfuse.langchain import CallbackHandler
 from opentelemetry import trace
 from langchain_core.messages import AIMessage
+from agent_workflow import graph
 
 
 app = FastAPI()
 langfuse = Langfuse()
 tracer = trace.get_tracer(__name__)
-
-client = MultiServerMCPClient(
-    {
-        "remote": {
-            "transport": "streamable_http",
-            "url": "http://mcp-server:8001/mcp",
-        }
-    }
-)
-
-llm = ChatLiteLLM(model="gemini/gemini-3.1-flash-lite")
-
 
 
 def _extract_usage_details(messages) -> Optional[dict[str, int]]:
@@ -53,32 +41,19 @@ async def prompt_response(prompt: str):
     with tracer.start_as_current_span("prompt_response") as span:
         span.set_attribute("agent.prompt", prompt)
 
-        with langfuse.start_as_current_observation(
-            as_type="generation",
-            name="prompt_response",
-            input=prompt,
-        ) as generation:
-            tools = await client.get_tools()
+        result = await graph.ainvoke(
+            {
+                "user_request": prompt,
+            },
+            config={
+                "callbacks": [callback_handler],
+            },
+        )
 
-            agent = create_agent(
-                model=llm,
-                tools=tools,
-            )
+        response_message = result.get("final_report", "")
+        span.set_attribute("agent.response", response_message)
 
-            response = await agent.ainvoke(
-                {"messages": [{"role": "user", "content": prompt}]},
-                config={"callbacks": [callback_handler]},
-            )
-
-            response_message = response["messages"][-1]
-            response_text = response_message.content
-            usage_details = _extract_usage_details(response_message)
-
-            span.set_attribute("agent.response", response_text)
-
-            generation.update(output=response_text, usage_details=usage_details)
-
-            return {
-                "response": response_text,
-                "usage_details": usage_details,
-            }
+    return {
+        "response": response_message,
+        "graph_state": result,
+    }
