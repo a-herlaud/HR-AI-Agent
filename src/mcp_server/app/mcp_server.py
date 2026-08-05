@@ -2,6 +2,7 @@ from fastmcp import FastMCP
 import requests
 from ddgs import DDGS
 from bs4 import BeautifulSoup
+from datetime import date
 
 mcp = FastMCP("HR MCP")
 
@@ -88,6 +89,16 @@ def fetch_url(url: str) -> str:
         separator="\n",
         strip=True
     )
+
+
+@mcp.tool()
+def get_today_date() -> str:
+    """
+    Return today's date.
+    """
+    today = date.today()
+    return today.isoformat()
+
 
 mcp.run(
     transport="http",
