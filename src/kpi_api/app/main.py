@@ -1,3 +1,4 @@
+from typing import Any
 from fastapi import FastAPI
 import json
 
@@ -9,13 +10,13 @@ with open("./database/output.json", "r") as f:
 
 # GET GLOBAL KPI FOR THE QUARTER
 @app.get("/api")
-def get_global_kpi():
+def get_global_kpi() -> dict[str, Any]:
     return db["Q3"]["Quarter"]
 
 
 # GET GLOBAL KPI FOR A MONTH
 @app.get("/api/months/{month}")
-def get_month_kpi(month: str):
+def get_month_kpi(month: str) -> dict[str, Any]:
     return db["Q3"][month]
 
 

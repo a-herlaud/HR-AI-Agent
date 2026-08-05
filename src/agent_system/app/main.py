@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any, Optional
 
 from fastapi import FastAPI
@@ -15,7 +16,7 @@ langfuse = Langfuse()
 tracer = trace.get_tracer(__name__)
 
 
-def _extract_usage_details(messages) -> Optional[dict[str, int]]:
+def _extract_usage_details(messages: Sequence[Any]) -> Optional[dict[str, int]]:
     totals = {"input": 0, "output": 0, "total": 0}
     found = False
     for m in messages:
@@ -35,7 +36,7 @@ def _extract_usage_details(messages) -> Optional[dict[str, int]]:
 
 
 @app.post("/prompt")
-async def prompt_response(prompt: str):
+async def prompt_response(prompt: str) -> dict[str, Any]:
     callback_handler = CallbackHandler()
 
     with tracer.start_as_current_span("prompt_response") as span:

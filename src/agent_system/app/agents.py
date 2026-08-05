@@ -1,4 +1,5 @@
-from typing import TypedDict
+from collections.abc import Awaitable, Callable
+from typing import Any, TypedDict
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_litellm import ChatLiteLLM
@@ -9,7 +10,7 @@ from langchain.agents import create_agent
 llm = ChatLiteLLM(model="gemini/gemini-3.1-flash-lite")
 
 
-async def load_tools():
+async def load_tools() -> dict[str, Any]:
     client = MultiServerMCPClient(
         {
             "remote": {
@@ -36,11 +37,15 @@ class AgentState(TypedDict, total=False):
 from langgraph.prebuilt import create_react_agent
 # or, if you're on langgraph v1+: from langchain.agents import create_agent as create_react_agent
 
-def create_my_agent(system_prompt, output_key, tools=None):
+def create_my_agent(
+    system_prompt: str,
+    output_key: str,
+    tools: list[Any] | None = None,
+) -> Callable[[AgentState], Awaitable[dict[str, str]]]:
     tools = tools or []
     react_agent = create_react_agent(llm, tools, prompt=system_prompt)
 
-    async def agent(state: AgentState):
+    async def agent(state: AgentState) -> dict[str, str]:
         content = state["user_request"]
 
         if output_key == "final_report":
@@ -61,7 +66,7 @@ def create_my_agent(system_prompt, output_key, tools=None):
 
     return agent
 
-def create_coordinator():
+def create_coordinator() -> Callable[[AgentState], dict[str, list[str]]]:
     planner = llm.with_structured_output(
         {
             "title": "RoutingDecision",
@@ -82,7 +87,7 @@ def create_coordinator():
         }
     )
 
-    def coordinator(state: AgentState):
+    def coordinator(state: AgentState) -> dict[str, list[str]]:
         result = planner.invoke(
             [
                 SystemMessage(

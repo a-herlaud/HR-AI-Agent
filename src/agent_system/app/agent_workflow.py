@@ -13,7 +13,7 @@ builder.add_node("reporter", reporter)
 builder.add_edge(START, "coordinator")
 
 
-def router(state: AgentState):
+def router(state: AgentState) -> list[Send]:
     sends = [Send(agent_name, state) for agent_name in state["route"]]
 
     # If nothing to execute, go directly to the reporter.
