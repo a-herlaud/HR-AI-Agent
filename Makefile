@@ -1,4 +1,6 @@
-COMPOSE= docker compose -f src/docker-compose.yml
+COMPOSE = docker compose \
+	-f ./src/docker-compose.yml \
+	--env-file .env
 
 up:
 	$(COMPOSE) up --build -d
@@ -8,6 +10,9 @@ down:
 
 exec-api:
 	$(COMPOSE) exec -it kpi-api bash
+
+exec-database:
+	$(COMPOSE) exec -it database bash
 
 up-test:
 	docker build -t my-test-image ./test && \

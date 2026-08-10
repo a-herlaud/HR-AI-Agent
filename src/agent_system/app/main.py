@@ -15,26 +15,6 @@ app = FastAPI()
 langfuse = Langfuse()
 tracer = trace.get_tracer(__name__)
 
-
-def _extract_usage_details(messages: Sequence[Any]) -> Optional[dict[str, int]]:
-    totals = {"input": 0, "output": 0, "total": 0}
-    found = False
-    for m in messages:
-        if not isinstance(m, AIMessage):
-            continue
-        um = _to_plain_dict(getattr(m, "usage_metadata", None))
-        if not um:
-            tu = (getattr(m, "response_metadata", {}) or {}).get("token_usage")
-            um = _to_plain_dict(tu)
-        if not um:
-            continue
-        found = True
-        totals["input"] += um.get("input_tokens") or um.get("prompt_tokens") or 0
-        totals["output"] += um.get("output_tokens") or um.get("completion_tokens") or 0
-        totals["total"] += um.get("total_tokens") or 0
-    return totals if found else None
-
-
 @app.post("/prompt")
 async def prompt_response(prompt: str) -> dict[str, Any]:
     callback_handler = CallbackHandler()

@@ -3,3 +3,9 @@ fastapi
 opentelemetry-distro
 opentelemetry-exporter-otlp
 opentelemetry-instrumentation-fastapi
+sqlalchemy
+pandas
+openpyxl
+python-Levenshtein
+psycopg2-binary
+python-multipart

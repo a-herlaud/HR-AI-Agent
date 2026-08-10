@@ -5,7 +5,45 @@ st.set_page_config(page_title="Chatbot", layout="wide")
 
 st.title("Chatbot")
 
-# Initialisation de l'historique
+# -------------------------
+# File upload
+# -------------------------
+
+uploaded_file = st.file_uploader(
+    "Upload an Excel file",
+    type=["xlsx", "xls"]
+)
+
+if uploaded_file is not None:
+    if st.button("Send file"):
+        try:
+            response = requests.post(
+                "http://kpi-api:8000/api",
+                files={
+                    "file": (
+                        uploaded_file.name,
+                        uploaded_file.getvalue(),
+                        uploaded_file.type,
+                    )
+                },
+            )
+
+            response.raise_for_status()
+
+            result = response.json()
+
+            st.success("File uploaded successfully!")
+
+            st.json(result)
+
+        except requests.RequestException as e:
+            st.error(f"Upload failed: {e}")
+
+
+# -------------------------
+# Chat
+# -------------------------
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -13,6 +51,7 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+
 
 # Zone de saisie
 if prompt := st.chat_input("Posez votre question..."):
@@ -31,8 +70,8 @@ if prompt := st.chat_input("Posez votre question..."):
     )
 
     response.raise_for_status()
-    response = response.json()
-    response = response["response"]
+
+    response = response.json()["response"]
 
     st.session_state.messages.append(
         {"role": "assistant", "content": response}

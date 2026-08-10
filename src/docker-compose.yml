@@ -11,6 +11,8 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
       OTEL_TRACES_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+    env_file:
+      - ../.env
 
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -61,7 +63,22 @@ services:
     ports:
       - "80:8080"
     networks:
-      - hr-process-helper  
+      - hr-process-helper
+
+
+  database:
+    container_name: database
+    build: ./database
+    env_file:
+      - ../.env
+    networks:
+      - hr-process-helper
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_API_USER} -d ${DB_API_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 networks:
   hr-process-helper:
