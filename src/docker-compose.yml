@@ -13,6 +13,9 @@ services:
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
     env_file:
       - ../.env
+    depends_on:
+      database:
+        condition: service_healthy
 
   jaeger:
     image: jaegertracing/all-in-one:latest

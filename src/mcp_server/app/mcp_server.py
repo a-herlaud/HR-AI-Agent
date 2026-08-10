@@ -9,11 +9,11 @@ mcp = FastMCP("HR MCP")
 @mcp.tool()
 def get_quarter_kpis() -> dict:
     """
-    get the HR KPIs for the current quarter
+    get the HR KPIs for the current quarter detailed for all employees and total for the team
     """
 
     response = requests.get(
-    "http://kpi-api:8000/api"
+    "http://kpi-api:8000/api/kpis"
     )
 
     return response.json()
@@ -21,7 +21,7 @@ def get_quarter_kpis() -> dict:
 @mcp.tool()
 def get_monthly_kpis(month: str) -> dict:
     """
-    get the HR KPIs for a certain month
+    get the HR KPIs for a certain month for all employees and global for the team
     """
     month = month.capitalize()
     response = requests.get(
@@ -29,6 +29,19 @@ def get_monthly_kpis(month: str) -> dict:
     )
 
     return response.json()
+
+
+@mcp.tool()
+def get_employees_kpis(name: str) -> dict:
+    """
+    get the HR KPIs for a certain employee for the whole quarter
+    """
+    month = month.capitalize()
+    response = requests.get(
+    f"http://kpi-api:8000/api/employees/{name}"
+    )
+
+    return response.json()    
 
 @mcp.tool()
 def web_search(query: str) -> list[dict]:

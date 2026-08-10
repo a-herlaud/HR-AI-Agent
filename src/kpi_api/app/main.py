@@ -2,23 +2,58 @@ from typing import Any
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 import json
-from create_tables import engine
+from create_tables import engine, Kpi
 import shutil
 import os
 from build_kpi_dataframe import build_kpi_dataframe
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+from pydantic import BaseModel, ConfigDict
 
 app = FastAPI()
 
+
+class KpiResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    month: str
+
+    nb_candidats_contactes: int
+    nb_entretiens_candidats_salaries: int
+    nb_entretiens_candidats_sous_traitants: int
+    nb_candidats_recrutes_salaries: int
+    nb_candidats_integres_sous_traitants: int
+    nombre_presentations_clients: int
+    nb_refus_cdi_salaries: int
+    nombre_ko_candidat_presentation_client: int
+    nombre_ko_client_presentation_client: int
+
 # GET GLOBAL KPI FOR THE QUARTER
-# @app.get("/api")
-# def get_global_kpi() -> dict[str, Any]:
-#     return db["Q3"]["Quarter"]
+@app.get("/api/kpis", response_model=list[KpiResponse])
+def get_kpis():
+    with Session(engine) as session:
+        return session.scalars(
+            select(Kpi).where(Kpi.month == "Quarter")
+        ).all()
 
 
 # GET GLOBAL KPI FOR A MONTH
-# @app.get("/api/months/{month}")
-# def get_month_kpi(month: str) -> dict[str, Any]:
-#     return db["Q3"][month]
+@app.get("/api/months/{month}", response_model=list[KpiResponse])
+def get_month_kpi(month: str) -> dict[str, Any]:
+    with Session(engine) as session:
+        return session.scalars(
+            select(Kpi).where(Kpi.month == month)
+        ).all()
+
+# GET KPI FOR AN EMPLOYEE
+@app.get("/api/employees/{name}", response_model=list[KpiResponse])
+def get_month_kpi(name: str) -> dict[str, Any]:
+    with Session(engine) as session:
+        return session.scalars(
+            select(Kpi).where(Kpi.name == name)
+        ).all()
 
 
 # POST AN EXCEL TO UPLOAD KPI
