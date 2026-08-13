@@ -41,6 +41,7 @@ def quarter_finder(column_list):
 def build_kpi_dataframe(excel_path: str = "kpi_rh.xlsx") -> pd.DataFrame:
     sheets = pd.read_excel(excel_path, sheet_name=None, header=2)
 
+
     def clean_sheet(df):
         for column in df.columns[2:]:
             month = correct_month(column)
@@ -61,11 +62,12 @@ def build_kpi_dataframe(excel_path: str = "kpi_rh.xlsx") -> pd.DataFrame:
     rows = []
     total_by_period = {}
 
+
     for name, sheet in sheets.items():
+        quarter_name = quarter_finder(clean_sheet(sheet).columns)
         kpis_by_period = clean_sheet(sheet).T
         for period, values in kpis_by_period.iterrows():
-            print(values)
-            row = {"name": name, "month": period, **values.to_dict()}
+            row = {"name": name, "quarter": quarter_name, "month": period, **values.to_dict()}
             rows.append(row)
 
             if period not in total_by_period:
@@ -74,8 +76,6 @@ def build_kpi_dataframe(excel_path: str = "kpi_rh.xlsx") -> pd.DataFrame:
                 for kpi_label in values.index:
                     total_by_period[period][kpi_label] = total_by_period[period].get(kpi_label, 0) + values[kpi_label]
 
-    quarter_name = quarter_finder(clean_sheet(sheets["Pauline"]).columns) or "Quarter"
     for period, values in total_by_period.items():
-        rows.append({"name": quarter_name, "month": period, **values})
-
+        rows.append({"name": "quarter", "quarter": quarter_name, "month": period, **values})
     return pd.DataFrame(rows)

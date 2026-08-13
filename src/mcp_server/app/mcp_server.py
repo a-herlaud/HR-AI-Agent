@@ -7,9 +7,17 @@ from datetime import date
 mcp = FastMCP("HR MCP")
 
 @mcp.tool()
-def get_quarter_kpis() -> dict:
+def get_kpis() -> dict:
     """
-    get the HR KPIs for the current quarter detailed for all employees and total for the team
+    Retrieve the complete set of HR KPIs.
+
+    Returns:
+        HR KPI data covering all available quarters and months,
+        including detailed KPI metrics for each employee and
+        aggregated KPI totals for the entire team.
+
+    Use this tool when you need to analyze, compare, or report
+    global HR KPIs across employees, months, or quarters.
     """
 
     response = requests.get(
@@ -19,9 +27,33 @@ def get_quarter_kpis() -> dict:
     return response.json()
 
 @mcp.tool()
+def get_quarter_kpis() -> dict:
+    """
+    Get HR KPIs for a specific quarter.
+
+    Args:
+        quarter: Quarter to retrieve, such as "Q1" or "Q3".
+
+    Returns:
+        The team's KPIs and individual employee KPIs for that quarter.
+    """
+
+    response = requests.get(
+    "http://kpi-api:8000/api/quarters/{quarter}"
+    )
+
+    return response.json()
+
+@mcp.tool()
 def get_monthly_kpis(month: str) -> dict:
     """
-    get the HR KPIs for a certain month for all employees and global for the team
+    Get HR KPIs for a specific month.
+
+    Args:
+        month: Month to retrieve in French, such as "Juillet" or "Septembre".
+
+    Returns:
+        The team's KPIs and individual employee KPIs for that month.
     """
     month = month.capitalize()
     response = requests.get(
@@ -34,7 +66,13 @@ def get_monthly_kpis(month: str) -> dict:
 @mcp.tool()
 def get_employees_kpis(name: str) -> dict:
     """
-    get the HR KPIs for a certain employee for the whole quarter
+    Get HR KPIs for a specific employee.
+
+    Args:
+        name: Name of the employee to retrieve.
+
+    Returns:
+        The monthly and quarter KPIs for that employee.
     """
     month = month.capitalize()
     response = requests.get(
@@ -49,10 +87,8 @@ def web_search(query: str) -> list[dict]:
     Search the internet for current and external information.
 
     MUST be used for:
-    - current date/time
     - latest news or events
     - recent documentation
-    - information that may have changed after model training
 
     Returns search results containing titles, URLs, and snippets.
 

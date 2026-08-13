@@ -12,7 +12,8 @@ class Kpi(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    month: Mapped[str] = mapped_column(String(50), nullable=False)
+    quarter: Mapped[str] = mapped_column(String(3), nullable=False)
+    month: Mapped[str] = mapped_column(String(15), nullable=False)
 
     nb_candidats_contactes: Mapped[int] = mapped_column(
         "Nb de candidats contactés",

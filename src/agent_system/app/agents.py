@@ -123,7 +123,7 @@ hr_agent = create_my_agent(
     Return the result from the tool you use or the string Nothing if you didn't call any tool
     """,
     "hr_analysis",
-    [tool_map["get_quarter_kpis"], tool_map["get_monthly_kpis"],],
+    [tool_map["get_kpis"] ,tool_map["get_quarter_kpis"], tool_map["get_monthly_kpis"], tool_map["get_employees_kpis"]],
 )
 
 web_researcher = create_my_agent(

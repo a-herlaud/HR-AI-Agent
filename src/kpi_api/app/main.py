@@ -18,6 +18,7 @@ class KpiResponse(BaseModel):
 
     id: int
     name: str
+    quarter: str
     month: str
 
     nb_candidats_contactes: int
@@ -30,14 +31,22 @@ class KpiResponse(BaseModel):
     nombre_ko_candidat_presentation_client: int
     nombre_ko_client_presentation_client: int
 
-# GET GLOBAL KPI FOR THE QUARTER
+# GET GLOBAL KPI
 @app.get("/api/kpis", response_model=list[KpiResponse])
 def get_kpis():
     with Session(engine) as session:
         return session.scalars(
-            select(Kpi).where(Kpi.month == "Quarter")
+            select(Kpi)
         ).all()
 
+
+# GET GLOBAL KPI FOR A QUARTER
+@app.get("/api/quarters/{quarter}", response_model=list[KpiResponse])
+def get_month_kpi(quarter: str) -> dict[str, Any]:
+    with Session(engine) as session:
+        return session.scalars(
+            select(Kpi).where(Kpi.quarter == quarter)
+        ).all()
 
 # GET GLOBAL KPI FOR A MONTH
 @app.get("/api/months/{month}", response_model=list[KpiResponse])
@@ -49,7 +58,7 @@ def get_month_kpi(month: str) -> dict[str, Any]:
 
 # GET KPI FOR AN EMPLOYEE
 @app.get("/api/employees/{name}", response_model=list[KpiResponse])
-def get_month_kpi(name: str) -> dict[str, Any]:
+def get_employee_kpi(name: str) -> dict[str, Any]:
     with Session(engine) as session:
         return session.scalars(
             select(Kpi).where(Kpi.name == name)
@@ -67,7 +76,6 @@ async def upload(file: UploadFile = File(...)):
         
         # Build KPI dataframe
         kpi_df = build_kpi_dataframe(temp_path)
-
         # Add KPI dataframe to the kpis table
         kpi_df.to_sql(
             name="kpis",
