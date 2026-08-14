@@ -22,5 +22,8 @@ up-test:
 			my-test-image bash
 		docker rmi my-test-image
 
+clean:
+	$(COMPOSE) down --rmi local
+
 fclean:
 	$(COMPOSE) down -v --rmi local
