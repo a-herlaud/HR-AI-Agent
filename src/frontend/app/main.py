@@ -6,38 +6,39 @@ st.set_page_config(page_title="Chatbot", layout="wide")
 st.title("Chatbot")
 
 # -------------------------
-# File upload
+# Sidebar - File upload
 # -------------------------
 
-uploaded_file = st.file_uploader(
-    "Upload an Excel file",
-    type=["xlsx", "xls"]
-)
+with st.sidebar:
+    st.header("KPI upload")
 
-if uploaded_file is not None:
-    if st.button("Send file"):
-        try:
-            response = requests.post(
-                "http://kpi-api:8000/api",
-                files={
-                    "file": (
-                        uploaded_file.name,
-                        uploaded_file.getvalue(),
-                        uploaded_file.type,
-                    )
-                },
-            )
+    uploaded_file = st.file_uploader(
+        "Upload an Excel file",
+        type=["xlsx", "xls"]
+    )
 
-            response.raise_for_status()
+    if uploaded_file is not None:
+        if st.button("Send file", use_container_width=True):
+            try:
+                response = requests.post(
+                    "http://kpi-api:8000/api",
+                    files={
+                        "file": (
+                            uploaded_file.name,
+                            uploaded_file.getvalue(),
+                            uploaded_file.type,
+                        )
+                    },
+                )
 
-            result = response.json()
+                response.raise_for_status()
 
-            st.success("File uploaded successfully!")
+                result = response.json()
 
-            st.json(result)
+                st.success("File uploaded successfully!")
 
-        except requests.RequestException as e:
-            st.error(f"Upload failed: {e}")
+            except requests.RequestException as e:
+                st.error(f"Upload failed: {e}")
 
 
 # -------------------------
