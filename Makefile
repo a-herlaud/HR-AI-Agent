@@ -3,10 +3,10 @@ COMPOSE = docker compose \
 	--env-file .env
 
 up:
-	$(COMPOSE) up --build -d
+	$(COMPOSE) --profile app up --build -d
 
 down:
-	$(COMPOSE) down -v
+	$(COMPOSE) --profile "*" down
 
 exec-api:
 	$(COMPOSE) exec -it kpi-api bash
@@ -22,8 +22,12 @@ up-test:
 			my-test-image bash
 		docker rmi my-test-image
 
+ci-test: up
+	$(COMPOSE) --profile test up --exit-code-from ci-test --abort-on-container-exit --no-deps ci-test
+
+
 clean:
-	$(COMPOSE) down --rmi local
+	$(COMPOSE) --profile "*" down --rmi local
 
 fclean:
-	$(COMPOSE) down -v --rmi local
+	$(COMPOSE) --profile "*" down -v --rmi local
