@@ -2,8 +2,8 @@ FROM python:3.13-slim-trixie@sha256:6771159cd4fa5d9bba1258caf0b82e6b73458c694d17
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY . .
 
 RUN pip install --no-cache-dir -r ./requirements.txt
 
-CMD ["sh", "-c", "while true; do sleep 3600; done"]
+CMD ["pytest"]
