@@ -12,9 +12,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create env file
+        working-directory: ${{ github.workspace }}
+        run: |
+          cat > "${GITHUB_WORKSPACE}/.env" <<EOF
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          LANGFUSE_SECRET_KEY=${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_PUBLIC_KEY=${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          POSTGRES_DB=${{ vars.POSTGRES_DB }}
+          POSTGRES_USER=${{ vars.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          DB_API_NAME=${{ vars.DB_API_NAME}}
+          DB_API_USER=${{ vars.DB_API_USER }}
+          DB_API_PWD=${{ secrets.DB_API_PWD }}
+          EOF
+
+      - name: Check env file
+        working-directory: ${{ github.workspace }}
+        run: |
+          pwd
+          ls -la "${GITHUB_WORKSPACE}/.env"
+          test -f "${GITHUB_WORKSPACE}/.env"
+
       - name: Run integration tests
+        working-directory: ${{ github.workspace }}
         run: make ci-test
 
       - name: Cleanup
         if: always()
+        working-directory: ${{ github.workspace }}
         run: make fclean
