@@ -15,16 +15,19 @@ exec-database:
 	$(COMPOSE) exec -it database bash
 
 up-test:
-	docker build -t my-test-image ./test && \
+	docker build -t my-test-image ./testing_env && \
 		docker run --rm -it \
 			--add-host=host.docker.internal:host-gateway \
 			-v "./test/app:/app:Z" \
 			my-test-image bash
 		docker rmi my-test-image
 
-ci-test: up
-	$(COMPOSE) --profile test up --exit-code-from ci-test --abort-on-container-exit --no-deps ci-test
-
+ci-test:
+	$(COMPOSE) --profile app --profile test up \
+	--build \
+	--abort-on-container-exit \
+	--exit-code-from ci-test \
+	--no-deps ci-test
 
 clean:
 	$(COMPOSE) --profile "*" down --rmi local

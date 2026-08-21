@@ -92,4 +92,9 @@ async def upload(file: UploadFile = File(...)):
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
     
