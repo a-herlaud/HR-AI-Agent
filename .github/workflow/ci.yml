@@ -12,6 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create env file
+        run: |
+          cat > .env <<EOF
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          LANGFUSE_SECRET_KEY=${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_PUBLIC_KEY=${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          POSTGRES_DB=${{ variables.POSTGRES_DB }}
+          POSTGRES_USER=${{ variables.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          DB_API_NAME=${{ variables.DB_API_NAME}}
+          DB_API_USER=${{ variables.DB_API_USER }}
+          DB_API_PWD=${{ secrets.DB_API_PWD }}
+          EOF
+
       - name: Run integration tests
         run: make ci-test
 
