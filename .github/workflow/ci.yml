@@ -18,11 +18,11 @@ jobs:
           GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
           LANGFUSE_SECRET_KEY=${{ secrets.LANGFUSE_SECRET_KEY }}
           LANGFUSE_PUBLIC_KEY=${{ secrets.LANGFUSE_PUBLIC_KEY }}
-          POSTGRES_DB=${{ variables.POSTGRES_DB }}
-          POSTGRES_USER=${{ variables.POSTGRES_USER }}
+          POSTGRES_DB=${{ vars.POSTGRES_DB }}
+          POSTGRES_USER=${{ vars.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          DB_API_NAME=${{ variables.DB_API_NAME}}
-          DB_API_USER=${{ variables.DB_API_USER }}
+          DB_API_NAME=${{ vars.DB_API_NAME}}
+          DB_API_USER=${{ vars.DB_API_USER }}
           DB_API_PWD=${{ secrets.DB_API_PWD }}
           EOF
 
