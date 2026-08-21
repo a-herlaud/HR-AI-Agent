@@ -27,7 +27,7 @@ ci-test:
 	--build \
 	--abort-on-container-exit \
 	--exit-code-from ci-test \
-	--no-deps ci-test
+	ci-test
 
 clean:
 	$(COMPOSE) --profile "*" down --rmi local
