@@ -13,8 +13,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Create env file
+        working-directory: ${{ github.workspace }}
         run: |
-          cat > .env <<EOF
+          cat > "${GITHUB_WORKSPACE}/.env" <<EOF
           GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
           LANGFUSE_SECRET_KEY=${{ secrets.LANGFUSE_SECRET_KEY }}
           LANGFUSE_PUBLIC_KEY=${{ secrets.LANGFUSE_PUBLIC_KEY }}
@@ -26,9 +27,18 @@ jobs:
           DB_API_PWD=${{ secrets.DB_API_PWD }}
           EOF
 
+      - name: Check env file
+        working-directory: ${{ github.workspace }}
+        run: |
+          pwd
+          ls -la "${GITHUB_WORKSPACE}/.env"
+          test -f "${GITHUB_WORKSPACE}/.env"
+
       - name: Run integration tests
+        working-directory: ${{ github.workspace }}
         run: make ci-test
 
       - name: Cleanup
         if: always()
+        working-directory: ${{ github.workspace }}
         run: make fclean
