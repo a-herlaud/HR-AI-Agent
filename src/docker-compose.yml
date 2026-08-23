@@ -6,8 +6,7 @@ services:
       - "8000:8000"
     networks:
       - hr-process-helper
-    profiles:
-      - app
+    profiles: ["app", "test"]
     environment:
       OTEL_SERVICE_NAME: kpi-api
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
@@ -39,8 +38,7 @@ services:
       - "4318:4318"
     networks:
       - hr-process-helper
-    profiles:
-      - app
+    profiles: ["app", "test"]
 
   mcp-server:
     build: ./mcp_server
@@ -49,13 +47,13 @@ services:
       - "8001:8001"
     networks:
       - hr-process-helper
-    profiles:
-      - app
+    profiles: ["app", "test"]
     environment:
       OTEL_SERVICE_NAME: mcp-server
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
       OTEL_TRACES_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+
 
   agent-system:
     build: ./agent_system
@@ -71,8 +69,8 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
       OTEL_TRACES_EXPORTER: otlp
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-    profiles:
-      - app
+    profiles: ["app", "test"]
+
 
   frontend:
     build: ./frontend
@@ -81,8 +79,7 @@ services:
       - "80:8080"
     networks:
       - hr-process-helper
-    profiles:
-      - app
+    profiles: ["app", "test"]
 
 
   database:
@@ -94,8 +91,7 @@ services:
       - hr-process-helper
     volumes:
       - postgres_data:/var/lib/postgresql/data   
-    profiles:
-      - app
+    profiles: ["app", "test"]
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_API_USER} -d ${DB_API_NAME}"]
@@ -103,16 +99,23 @@ services:
       timeout: 5s
       retries: 10
 
+
   ci-test:
     container_name: ci-test
     build: ./ci_test
     networks:
       - hr-process-helper
     depends_on:
+      mcp-server:
+        condition: service_started
+      agent-system:
+        condition: service_started
+      frontend:
+        condition: service_started
       kpi-api:
         condition: service_healthy
-    profiles:
-      - test
+
+    profiles: ["test"]
 
 volumes:
   postgres_data:   

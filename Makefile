@@ -23,7 +23,7 @@ up-test:
 		docker rmi my-test-image
 
 ci-test:
-	$(COMPOSE) --profile app --profile test up \
+	$(COMPOSE) --profile test up \
 	--build \
 	--abort-on-container-exit \
 	--exit-code-from ci-test \
